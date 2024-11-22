@@ -2,6 +2,7 @@
 ## :computer: Environment
 
 ```shell
+git clone https://github.com/hqj9994ever/TextMEF.git
 conda create -n TextMEF python=3.8.18
 conda activate TextMEF
 conda install cudatoolkit==11.8 -c nvidia
