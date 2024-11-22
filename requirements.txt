@@ -1,0 +1,13 @@
+causal_conv1d==1.1.1
+einops==0.8.0
+ftfy==6.3.1
+mamba_ssm==1.1.1
+numpy==1.21.5
+opencv_python==4.6.0.66
+Pillow==9.2.0
+Pillow==11.0.0
+regex==2022.8.17
+setuptools==63.4.1
+torch==1.13.0
+torchvision==0.14.1
+tqdm==4.64.0
