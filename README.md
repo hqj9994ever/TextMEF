@@ -1,4 +1,4 @@
-## TextMEF
+# TextMEF: Text-guided Prompt Learning for Multi-exposure Image Fusion
 ## :computer: Environment
 
 ```shell
