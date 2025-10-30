@@ -1,5 +1,5 @@
 # TextMEF: Text-guided Prompt Learning for Multi-exposure Image Fusion
-## :computer: Environment
+## :airplane: Environment
 
 ```shell
 git clone https://github.com/hqj9994ever/TextMEF.git
