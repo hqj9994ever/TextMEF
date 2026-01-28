@@ -1,29 +1,22 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd import Variable
-import torch.nn.functional as F
-import numpy as np
-from .cga import *
-from model.mamba_simple import Mamba
-from einops import rearrange
+
+import math
 import numbers
-###############################################################################
-# Functions
-###############################################################################
+import numpy as np
 
-def print_network(net):
-    num_params = 0
-    for param in net.parameters():
-        num_params += param.numel()
-    # print(net)
-    print('Total number of parameters: %d' % num_params)
+from .cga import ChannelAttention, PixelAttention, SpatialAttention
+from model.mamba_simple import Mamba
 
-def to_3d(x):
-    return rearrange(x, 'b c h w -> b (h w) c')
+from utils.utils import to_3d, to_4d, weights_init
 
-def to_4d(x, h, w):
-    return rearrange(x, 'b (h w) c -> b c h w', h=h, w=w)
+
+def define_G(in_channels):
+    netG = FusionNet(base_filter=in_channels)
+    netG.apply(weights_init)
+    return netG
+
 
 class BiasFree_LayerNorm(nn.Module):
     def __init__(self, normalized_shape):
@@ -40,6 +33,7 @@ class BiasFree_LayerNorm(nn.Module):
     def forward(self, x):
         sigma = x.var(-1, keepdim=True, unbiased=False)
         return x / torch.sqrt(sigma+1e-5) * self.weight
+    
 
 
 class WithBias_LayerNorm(nn.Module):
@@ -61,6 +55,7 @@ class WithBias_LayerNorm(nn.Module):
         return (x - mu) / torch.sqrt(sigma+1e-5) * self.weight + self.bias
     
 
+
 class LayerNorm(nn.Module):
     def __init__(self, dim, LayerNorm_type):
         super(LayerNorm, self).__init__()
@@ -77,15 +72,17 @@ class LayerNorm(nn.Module):
             return self.body(x)
         
 
+
 class PatchUnEmbed(nn.Module):
     def __init__(self,basefilter) -> None:
         super().__init__()
         self.nc = basefilter
     def forward(self, x,x_size):
-        B,HW,C = x.shape
+        B, HW, C = x.shape
         x = x.transpose(1, 2).view(B, self.nc, x_size[0], x_size[1])  # BNC->BCHW
         return x
     
+
 
 class PatchEmbed(nn.Module):
     """ 2D Image to Patch Embedding
@@ -182,7 +179,7 @@ class HinResBlock(nn.Module):
         out_1, out_2 = torch.chunk(resi, 2, dim=1)
         resi = torch.cat([self.norm(out_1), out_2], dim=1)
         resi = self.relu_2(self.conv_2(resi))
-        return x+resi
+        return x + resi
 
 
 class ChannelAttention(nn.Module):
@@ -207,7 +204,7 @@ class ChannelAttention(nn.Module):
         res = self.process(x)
         y = self.avg_pool(res)
         z = self.conv_du(y)
-        return z *res + x
+        return z * res + x
 
 
 class Refine(nn.Module):
@@ -318,22 +315,21 @@ class CGAFusion(nn.Module):
         return result
 
   
-class Net(nn.Module):
-    def __init__(self, num_channels=None, base_filter=None, args=None):
-        super(Net, self).__init__()
-        base_filter=64
+class FusionNet(nn.Module):
+    def __init__(self, base_filter=64, args=None):
+        super(FusionNet, self).__init__()
         self.base_filter = base_filter
         self.stride=1
         self.patch_size=1
-        self.over_encoder = nn.Sequential(nn.Conv2d(3,base_filter,3,1,1),HinResBlock(base_filter,base_filter))
-        self.under_encoder = nn.Sequential(nn.Conv2d(3,base_filter,3,1,1),HinResBlock(base_filter,base_filter))
+        self.over_encoder = nn.Sequential(nn.Conv2d(3, base_filter, 3, 1, 1), HinResBlock(base_filter, base_filter))
+        self.under_encoder = nn.Sequential(nn.Conv2d(3, base_filter, 3, 1, 1), HinResBlock(base_filter,base_filter))
 
-        self.embed_dim = base_filter*self.stride*self.patch_size
+        self.embed_dim = base_filter * self.stride * self.patch_size
         self.attention_1 = AttenionNet(self.embed_dim)
         self.attention_2 = AttenionNet(self.embed_dim)
-        self.under_to_token = PatchEmbed(in_chans=base_filter,embed_dim=self.embed_dim,patch_size=self.patch_size,stride=self.stride)
-        self.over_to_token = PatchEmbed(in_chans=base_filter,embed_dim=self.embed_dim,patch_size=self.patch_size,stride=self.stride)
-        self.f_to_token = PatchEmbed(in_chans=base_filter,embed_dim=self.embed_dim,patch_size=self.patch_size,stride=self.stride)
+        self.under_to_token = PatchEmbed(in_chans=base_filter, embed_dim=self.embed_dim, patch_size=self.patch_size, stride=self.stride)
+        self.over_to_token = PatchEmbed(in_chans=base_filter, embed_dim=self.embed_dim,patch_size=self.patch_size, stride=self.stride)
+        self.f_to_token = PatchEmbed(in_chans=base_filter, embed_dim=self.embed_dim, patch_size=self.patch_size, stride=self.stride)
         self.deepfusion1= CrossMamba(self.embed_dim)
         self.deepfusion2 = CrossMamba(self.embed_dim)
         self.deepfusion3 = CGAFusion(self.embed_dim)
@@ -341,12 +337,12 @@ class Net(nn.Module):
         self.swap_mamba1 = TokenSwapMamba(self.embed_dim)
         self.swap_mamba2 = TokenSwapMamba(self.embed_dim)
         self.patchunembe = PatchUnEmbed(base_filter)
-        self.refine = Refine(base_filter,3)
+        self.refine = Refine(base_filter, 3)
 
     def forward(self, under, over):
 
         under_f = self.under_encoder(under)
-        _,_,h,w = under_f.shape
+        _, _, H, W = under_f.shape
         over_f = self.over_encoder(over)
 
         residual_under_f = 0
@@ -358,11 +354,12 @@ class Net(nn.Module):
         over_f = self.over_to_token(over_f)
         under_f, over_f, residual_under_f, residual_over_f = self.swap_mamba1(under_f, over_f, residual_under_f, residual_over_f)
         under_f, over_f, residual_under_f, residual_over_f = self.swap_mamba2(under_f, over_f, residual_under_f, residual_over_f)
-        under_f, residual_under_f = self.deepfusion1(under_f, residual_under_f, (h,w))
-        over_f, residual_over_f = self.deepfusion2(over_f, residual_over_f, (h,w))
-        under_f = self.patchunembe(under_f,(h,w))
-        over_f = self.patchunembe(over_f,(h,w))
+        under_f, residual_under_f = self.deepfusion1(under_f, residual_under_f, (H, W))
+        over_f, residual_over_f = self.deepfusion2(over_f, residual_over_f, (H, W))
+        under_f = self.patchunembe(under_f, (H, W))
+        over_f = self.patchunembe(over_f, (H, W))
         f = self.deepfusion3(under_f,over_f)
         output = self.refine(f) + under + over
+
         return output
 
