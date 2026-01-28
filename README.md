@@ -28,6 +28,28 @@ You can download our training set and test set on [Baidu Netdisk](https://pan.ba
 
 You should put the data in the correct place in the following form.
 
+```
+TextMEF ROOT
+└── Dataset
+    ├── train_data
+    │   └── SICE
+    │       ├── trainA
+    │       ├── trainB
+    │       └── trainC
+    └── test_data
+        ├── 31nogt
+        │   ├── over
+        │   └── under
+        ├── Mobile
+        │   ├── over
+        │   ├── under
+        │   └── gt
+        └── SICE
+            ├── over
+            ├── under
+            └── gt
+```
+
 
 #### :cookie: Pretrained Checkpoints
 
