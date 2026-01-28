@@ -1,5 +1,7 @@
 ## TextMEF: Text-guided Prompt Learning for Multi-exposure Image Fusion [IJCAI 2025]
 
+[[paper]](https://www.ijcai.org/proceedings/2025/0175.pdf)
+
 ## :memo: TODO
 - :white_check_mark: Release training and testing code.
 - :white_check_mark: Release our training sets and test sets.
