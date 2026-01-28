@@ -24,7 +24,7 @@ Note: After installing the mamba library, replace the file content of `mamba_ssm
 
 #### 📂 Data Preparation
 
-You can download our training set and test set on [Baidu Netdisk](https://pan.baidu.com/s/18fz8JvgHQyW6pAPZNBT_Wg)(code:5pen) or [Google Drive](https://drive.google.com/drive/folders/1Xt2bGHzE5WPtI_c8lCDBn6UeB_iLHTf_?usp=sharing).
+You can download our training set and test set on [Google Drive]([https://drive.google.com/drive/folders/1Xt2bGHzE5WPtI_c8lCDBn6UeB_iLHTf_?usp=sharing](https://drive.google.com/drive/folders/1VsckjV152tF5As6gq7G1u7LOmzuIKhE3?usp=sharing)).
 
 You should put the data in the correct place in the following form.
 
@@ -53,7 +53,7 @@ TextMEF ROOT
 
 #### :cookie: Pretrained Checkpoints
 
-Download the model weights on [Baidu Netdisk](https://pan.baidu.com/s/18fz8JvgHQyW6pAPZNBT_Wg)(code:5pen) or [Google Drive](https://drive.google.com/drive/folders/1Xt2bGHzE5WPtI_c8lCDBn6UeB_iLHTf_?usp=sharing) and put it in `model_zoo/`.
+Download the model weights on [Google Drive]([https://drive.google.com/drive/folders/1Xt2bGHzE5WPtI_c8lCDBn6UeB_iLHTf_?usp=sharing](https://drive.google.com/drive/folders/1VsckjV152tF5As6gq7G1u7LOmzuIKhE3?usp=sharing)) and put it in `model_zoo/`.
 
 ## :tennis: Train
 
