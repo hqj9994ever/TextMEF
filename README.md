@@ -28,6 +28,11 @@ You can download our training set and test set on [Baidu Netdisk](https://pan.ba
 
 You should put the data in the correct place in the following form.
 
+
+#### :cookie: Pretrained Checkpoints
+
+Download the model weights on [Baidu Netdisk](https://pan.baidu.com/s/18fz8JvgHQyW6pAPZNBT_Wg)(code:5pen) or [Google Drive](https://drive.google.com/drive/folders/1Xt2bGHzE5WPtI_c8lCDBn6UeB_iLHTf_?usp=sharing) and put it in `model_zoo/`.
+
 ## :tennis: Train
 
 ### Prompt learning
