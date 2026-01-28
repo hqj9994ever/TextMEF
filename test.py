@@ -11,10 +11,10 @@ from utils import utils_logger
 
 
 # --- Parse hyper-parameters  --- #
-parser = argparse.ArgumentParser(description='PyTorch implementation of SPRFusion')
-parser.add_argument('--input_u', help='directory of input folder', default='Dataset/test_data/SICE/trainA/')
-parser.add_argument('--input_o', help='directory of input folder', default='Dataset/test_data/SICE/trainB/')
-parser.add_argument('--gt', help='directory of gt folder', default='Dataset/test_data/SICE/trainC/')
+parser = argparse.ArgumentParser(description='PyTorch implementation of TextMEF')
+parser.add_argument('--input_u', help='directory of input folder', default='Dataset/test_data/test/under/')
+parser.add_argument('--input_o', help='directory of input folder', default='Dataset/test_data/test/over/')
+parser.add_argument('--gt', help='directory of gt folder', default='Dataset/test_data/test/gt/')
 parser.add_argument('--output', help='directory of output folder', default='results/')
 parser.add_argument('--need_H', help='have ground truth or not', action='store_true', default=False)
 parser.add_argument('--model_G_path', help='test ckpt path', default='model_zoo/epoch_400_G.pth')
