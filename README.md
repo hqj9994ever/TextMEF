@@ -97,5 +97,19 @@ python test.py \
 --need_H (if GT exists) 
 ```
 
+## :pushpin: Citation
+
+If this work has been helpful to you, we would appreciate it if you could cite our paper! 
+
+```BibTex
+@inproceedings{liu2025textmef,
+  title={TextMEF: text-guided prompt learning for multi-exposure image fusion},
+  author={Liu, Jinyuan and Huang, Qianjun and Wu, Guanyao and Wang, Di and Jiang, Zhiying and Ma, Long and Liu, Risheng and Fan, Xin},
+  booktitle={Proceedings of the Thirty-Fourth International Joint Conference on Artificial Intelligence},
+  pages={1567--1575},
+  year={2025}
+}
+```
+
 ## :email: Contact
   If you have any other questions about the code, please open an issue in this repository or email us at  `hqj9994ever@gmail.com`.
